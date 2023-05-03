@@ -1,4 +1,5 @@
 use core::fmt;
+use std::io::Write;
 use miden::{AssemblyError, ExecutionError};
 use structopt::StructOpt;
 
@@ -53,7 +54,11 @@ pub fn main() {
 
     // execute cli action
     if let Err(error) = cli.execute() {
-        println!("{}", error);
+        // flush stdout to ensure that error message comes after
+        println!();
+        std::io::stdout().flush().unwrap();
+        eprintln!("{}", error);
+        std::process::exit(1);
     }
 }
 
