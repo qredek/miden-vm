@@ -7,8 +7,10 @@ members = [
   "processor",
   "prover",
   "stdlib",
+  "test-utils",
   "verifier"
 ]
+resolver = "2"
 
 [profile.optimized]
 inherits = "release"

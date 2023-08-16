@@ -2,7 +2,7 @@ use super::{
     AssemblyContext, AssemblyError, BodyWrapper, Borrow, CodeBlock, Decorator, DecoratorList,
     Instruction, Operation, ToString, Vec,
 };
-use vm_core::AssemblyOp;
+use vm_core::{AdviceInjector, AssemblyOp};
 
 // SPAN BUILDER
 // ================================================================================================
@@ -89,20 +89,16 @@ impl SpanBuilder {
         self.decorators.push((self.ops.len(), decorator));
     }
 
-    /// Adds the specified decorator to the list of span decorators and returns Ok(None).
-    pub fn add_decorator(
-        &mut self,
-        decorator: Decorator,
-    ) -> Result<Option<CodeBlock>, AssemblyError> {
-        self.push_decorator(decorator);
-        Ok(None)
+    /// Adds the specified advice injector to the list of span decorators.
+    pub fn push_advice_injector(&mut self, injector: AdviceInjector) {
+        self.push_decorator(Decorator::Advice(injector));
     }
 
     /// Adds an AsmOp decorator to the list of span decorators.
     ///
     /// This indicates that the provided instruction should be tracked and the cycle count for
     /// this instruction will be computed when the call to set_instruction_cycle_count() is made.
-    pub fn track_instruction(&mut self, instruction: &Instruction, ctx: &mut AssemblyContext) {
+    pub fn track_instruction(&mut self, instruction: &Instruction, ctx: &AssemblyContext) {
         let context_name = ctx.current_context_name().to_string();
         let num_cycles = 0;
         let op = instruction.to_string();
